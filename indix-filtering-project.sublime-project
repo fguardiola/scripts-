@@ -12,7 +12,7 @@
 			"path": "specs"
 		},
 		{
-			"path": "data"
+			"path": "data/"
 		}
 	]
 }
