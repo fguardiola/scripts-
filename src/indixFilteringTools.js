@@ -5,7 +5,7 @@ var _ = require('lodash');
 var lib = {
 	'version': '0.1.0',
 	'config': {
-		source: "../data/inputJsonl.jsonl",
+		source: "../data/Target-22033-211016.jsonl.gz",
 		verbose: false,
 		veryVerbose: false,
 	},
@@ -45,6 +45,21 @@ var lib = {
 			});
 		});
 	},
+	writeJsonLineFileAsync:function(arrayJsonObjs){
+		return new Promise(function(c, e) {
+			var file = fs.createWriteStream('../data/output.jsonl');
+			file.on('error', function(err) {
+				throw new Error("Error writing jsonl file")
+			});
+			arrayJsonObjs.forEach(function(jsonObj) {
+				file.write(JSON.stringify(jsonObj) + '\n');
+			});
+			file.end();
+			c("Finish writing to jsonl!!!");
+		});
+		
+	},
+
 	jsonToCsvAsync : function (entry,csvPath){
 		return new Promise(function(c, e) {
 			var jsonObj;
@@ -67,21 +82,21 @@ var lib = {
 			var objsToFilter = workb.jsonToFilter;
 			var matches = [];
 			
-			// test= ["e775b275a589b9dd8c94a23a4256b04c","something"];
+			// test= ["e775b275a589b9dd8c94a23a4256b04c","01013612cc82175244a99463951fc33a"];
 			objsToFilter.forEach(function(objToFilter,index){
-				console.log(index)
+				// console.log(index)
 				var	stores=objToFilter["stores"];
 				var productObject =stores[(Object.keys(stores)[0])].offers[0]; 
 				//console.log(productObject);
 			    var pid = productObject.pid;
-			    console.log(pid);
+			    // console.log(pid);
 				var match = _.find(keysToLookUp,{'PIDs':pid});
 				 if(match) matches.push(objToFilter);
 				 // if(!match) objsToFilter.splice(index, 1);
 
 			})
 			console.log("After filtration:" + matches.length + " matches!!");
-			console.log(JSON.stringify(matches,null,4));
+			// console.log(JSON.stringify(matches,null,4));
 
           c(matches);
 		});

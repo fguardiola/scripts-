@@ -27,7 +27,15 @@ lib.jsonToCsvAsync(workblob,csvPath).then(function(result){
 	  
 	});
 }).then(function(result){
-	p(result);
+	console.log("matches: "+ result.length);
+	// p(result);
+	if (result.length > 0){
+		console.log("Writing to jsonl...")
+		lib.writeJsonLineFileAsync(result).then(function(result){
+		  p(result);
+		})
+	}	
+	else console.log("No matches. Nothing to write on output jsonl");
 });
 
 // lib.jsonToCsvAsync(workblob,csvPath).then(lib.readJsonLineFileAsync()).then(function(result){
