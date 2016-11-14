@@ -8,6 +8,7 @@ var lib = {
 		source: "../data/Target-22033-211016.jsonl.gz",
 		verbose: false,
 		veryVerbose: false,
+		output:"../data/output.jsonl"
 	},
 
 	'productMap': {
@@ -40,16 +41,16 @@ var lib = {
 				if (lib.config.veryVerbose) process.stdout.write("\n");
 				if (lib.config.verbose) lib.utils.colorLog("[+] Read " + linecounter + " lines");
 				if (lib.config.verbose) lib.utils.colorLog("[+] Parsed " + source.length + " JSON objects successfully");
-				entry["jsonToFilter"] =source;
+				entry["jsonToFilter"] = source;
 				// console.log(entry,null,4);
 				c(entry);
 			});
 		});
 	},
-	writeJsonLineFileAsync:function(arrayJsonObjs){
+	writeJsonLineFileAsync: function(arrayJsonObjs) {
 		return new Promise(function(c, e) {
 			console.log("Writing matches to jsonl file...")
-			var file = fs.createWriteStream('../data/output.jsonl');
+			var file = fs.createWriteStream(lib.config.output);
 			file.on('error', function(err) {
 				throw new Error("Error writing jsonl file")
 			});
@@ -59,10 +60,10 @@ var lib = {
 			file.end();
 			c("Finish writing to jsonl!!!");
 		});
-		
+
 	},
 
-	csvToJsonAsync : function (entry,csvPath){
+	csvToJsonAsync: function(entry, csvPath) {
 		return new Promise(function(c, e) {
 			console.log("Tranforming csv PID's we are interesting on to JSON");
 			var jsonObj;
@@ -71,40 +72,40 @@ var lib = {
 			converter.fromFile(csvPath, function(err, result) {
 				if (err) throw new Error("Invalid Conversion");
 				if (result) {
-					entry["jsonKeys"] =result;
+					entry["jsonKeys"] = result;
 					console.log("Keys to look up ready!!");
 					// console.log(JSON.stringify(entry.jsonKeys,null,4));
 					c(entry);
 				}
 			});
-			
+
 		});
 	},
-	
-	filterJsonAsync : function(workb){
+
+	filterJsonAsync: function(workb) {
 		return new Promise(function(c, e) {
 			console.log("Filtering source looking up for matches...")
 			var keysToLookUp = workb.jsonKeys;
 			var objsToFilter = workb.jsonToFilter;
 			var matches = [];
-			
+
 			// test= ["e775b275a589b9dd8c94a23a4256b04c","01013612cc82175244a99463951fc33a"];
-			objsToFilter.forEach(function(objToFilter,index){
-				// console.log(index)
-				var	stores=objToFilter["stores"];
-				var productObject =stores[(Object.keys(stores)[0])].offers[0]; 
+			objsToFilter.forEach(function(objToFilter, index) {
+				var stores = objToFilter["stores"];
+				var productObject = stores[(Object.keys(stores)[0])].offers[0];
 				//console.log(productObject);
-			    var pid = productObject.pid;
-			    // console.log(pid);
-				var match = _.find(keysToLookUp,{'PIDs':pid});
-				 if(match) matches.push(objToFilter);
-				 // if(!match) objsToFilter.splice(index, 1);
+				var pid = productObject.pid;
+				// console.log(pid);
+				var match = _.find(keysToLookUp, {
+					'PIDs': pid
+				});
+				if (match) matches.push(objToFilter);
+				// if(!match) objsToFilter.splice(index, 1);
 
 			})
 			console.log("After filtration:" + matches.length + " matches!!");
-			// console.log(JSON.stringify(matches,null,4));
 
-          c(matches);
+			c(matches);
 		});
 	},
 	checkImagesAsync: function(entry) {
@@ -165,13 +166,13 @@ var lib = {
 				});
 			}
 			//array to push images to check
-		//skip cheching if there is not chechImages config property with enabled property set to true
-		if (lib.productMap.checkImages == undefined){
+			//skip cheching if there is not chechImages config property with enabled property set to true
+		if (lib.productMap.checkImages == undefined) {
 			if (lib.config.verbose) lib.utils.colorLog("[-]\tSkipping Image checking");
 			return entry;
 		}
 		var enabled = lib.productMap.checkImages;
-		if (!enabled == true || !enabled == "true"){
+		if (!enabled == true || !enabled == "true") {
 			if (lib.config.verbose) lib.utils.colorLog("[-]\tSkipping Image checking. Enabled property not set to true");
 			return entry;
 		}
@@ -227,7 +228,7 @@ var lib = {
 				// set original invalidAdditionalImages to blank
 				// filter the original array getting rid of the invalid images
 				var originalAdditionalImages = entry["additionalImageUrls"]
-				invalidAdditionalImages.forEach(function(invalidAdditionalImage){
+				invalidAdditionalImages.forEach(function(invalidAdditionalImage) {
 					originalAdditionalImages = _.filter(originalAdditionalImages, function(currentObject) {
 						return currentObject === invalidAdditionalImage.url;
 					});
@@ -243,8 +244,7 @@ var lib = {
 
 		});
 	},
-	utils: {
-	}
+	utils: {}
 }
 
 module.exports = lib;
