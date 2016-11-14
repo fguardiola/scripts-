@@ -16,6 +16,7 @@ var lib = {
 
 	readJsonLineFileAsync: function(entry) {
 		return new Promise(function(c, e) {
+			console.log("Reading source...");
 			var source = [];
 
 			if (lib.config.verbose) lib.utils.colorLog("[*] Reading input source file");
@@ -40,13 +41,14 @@ var lib = {
 				if (lib.config.verbose) lib.utils.colorLog("[+] Read " + linecounter + " lines");
 				if (lib.config.verbose) lib.utils.colorLog("[+] Parsed " + source.length + " JSON objects successfully");
 				entry["jsonToFilter"] =source;
-				// console.log(entry);
+				// console.log(entry,null,4);
 				c(entry);
 			});
 		});
 	},
 	writeJsonLineFileAsync:function(arrayJsonObjs){
 		return new Promise(function(c, e) {
+			console.log("Writing matches to jsonl file...")
 			var file = fs.createWriteStream('../data/output.jsonl');
 			file.on('error', function(err) {
 				throw new Error("Error writing jsonl file")
@@ -60,8 +62,9 @@ var lib = {
 		
 	},
 
-	jsonToCsvAsync : function (entry,csvPath){
+	csvToJsonAsync : function (entry,csvPath){
 		return new Promise(function(c, e) {
+			console.log("Tranforming csv PID's we are interesting on to JSON");
 			var jsonObj;
 			var Converter = require("csvtojson").Converter;
 			var converter = new Converter({});
@@ -69,6 +72,8 @@ var lib = {
 				if (err) throw new Error("Invalid Conversion");
 				if (result) {
 					entry["jsonKeys"] =result;
+					console.log("Keys to look up ready!!");
+					// console.log(JSON.stringify(entry.jsonKeys,null,4));
 					c(entry);
 				}
 			});
@@ -78,6 +83,7 @@ var lib = {
 	
 	filterJsonAsync : function(workb){
 		return new Promise(function(c, e) {
+			console.log("Filtering source looking up for matches...")
 			var keysToLookUp = workb.jsonKeys;
 			var objsToFilter = workb.jsonToFilter;
 			var matches = [];
